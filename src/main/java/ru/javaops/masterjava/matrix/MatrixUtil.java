@@ -23,14 +23,26 @@ public class MatrixUtil {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
-        for (int i = 0; i < matrixSize; i++) {
-            for (int j = 0; j < matrixSize; j++) {
-                int sum = 0;
+        //double matrixBT[][] = new double[matrixB.length][matrixB[0].length];
+        int[] thatColumn = new int[matrixSize];
+
+        try {
+            for (int j = 0; ; j++) {
                 for (int k = 0; k < matrixSize; k++) {
-                    sum += matrixA[i][k] * matrixB[k][j];
+                    thatColumn[j] = matrixB[k][j];
                 }
-                matrixC[i][j] = sum;
+                for (int i = 0; i < matrixSize; i++) {
+                    int[] thisRow = matrixA[i];
+                    int sum = 0;
+                    for (int k = 0; k < matrixSize; k++) {
+                        sum += thisRow[k] * thatColumn[k];
+                    }
+                    matrixC[i][j] = sum;
+                }
             }
+        }
+        catch(IndexOutOfBoundsException ignored){
+            //do nothing
         }
         return matrixC;
     }
