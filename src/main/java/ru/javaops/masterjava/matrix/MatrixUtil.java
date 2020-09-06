@@ -1,20 +1,47 @@
 package ru.javaops.masterjava.matrix;
 
+import ru.javaops.masterjava.service.MailService;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 /**
  * gkislin
  * 03.07.2016
  */
 public class MatrixUtil {
-
     // TODO implement parallel multiplication matrixA*matrixB
     public static int[][] concurrentMultiply(int[][] matrixA, int[][] matrixB, ExecutorService executor) throws InterruptedException, ExecutionException {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
+        int[] thatColumn = new int[matrixSize];
+
+        CountDownLatch latch = new CountDownLatch(matrixSize);
+
+        for (int j = 0; j<matrixSize; j++) {
+            final int index = j;
+            for (int k = 0; k < matrixSize; k++) {
+                thatColumn[j] = matrixB[k][index];
+            }
+            executor.execute(()-> {
+                //System.out.println("Worker "+index+" started");
+                for (int i = 0; i < matrixSize; i++) {
+                    int[] thisRow = matrixA[i];
+                    int sum = 0;
+                    for (int k = 0; k < matrixSize; k++) {
+                        sum += thisRow[k] * thatColumn[k];
+                    }
+                    matrixC[i][index] = sum;
+                }
+                latch.countDown();
+                //System.out.println("Worker "+index+" finished");
+            });
+        }
+        latch.await();
+        executor.shutdown();
         return matrixC;
     }
 
@@ -23,7 +50,6 @@ public class MatrixUtil {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
-        //double matrixBT[][] = new double[matrixB.length][matrixB[0].length];
         int[] thatColumn = new int[matrixSize];
 
         try {
