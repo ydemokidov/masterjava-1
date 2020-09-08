@@ -17,32 +17,51 @@ public class MatrixUtil {
         final int matrixSize = matrixA.length;
         final int[][] matrixC = new int[matrixSize][matrixSize];
 
-        int[] thatColumn = new int[matrixSize];
-
         CountDownLatch latch = new CountDownLatch(matrixSize);
 
         for (int j = 0; j<matrixSize; j++) {
-            final int index = j;
+            final int col = j;
+            final int[] columnB =new int[matrixSize];
             for (int k = 0; k < matrixSize; k++) {
-                thatColumn[j] = matrixB[k][index];
+                columnB[k] = matrixB[k][col];
             }
             executor.execute(()-> {
-                //System.out.println("Worker "+index+" started");
-                for (int i = 0; i < matrixSize; i++) {
-                    int[] thisRow = matrixA[i];
+                //print("columnB",columnB,col);
+                final int[] columnC = new int[matrixSize];
+                for (int row = 0; row < matrixSize; row++) {
+                    final int[] rowA = matrixA[row];
+                    //print("rowA",rowA,col);
                     int sum = 0;
-                    for (int k = 0; k < matrixSize; k++) {
-                        sum += thisRow[k] * thatColumn[k];
+                    for (int a = 0; a < matrixSize; a++) {
+                        sum += rowA[a] * columnB[a];
                     }
-                    matrixC[i][index] = sum;
+                    columnC[row] = sum;
                 }
+                //print("columnC",columnC,col);
+                for(int c=0; c<matrixSize;c++){
+                    //System.out.println("matrixC["+c+"]["+col+"] = " +columnC[c]);
+                    matrixC[c][col] = columnC[c];
+                }
+
                 latch.countDown();
-                //System.out.println("Worker "+index+" finished");
+                //System.out.println("Worker "+col+" finished");
             });
         }
         latch.await();
-        executor.shutdown();
+        //executor.shutdown();
         return matrixC;
+    }
+
+    private static void print(String name,int[] arr,int col){
+        StringBuffer sb = new StringBuffer();
+        sb.append(col+" : ");
+        sb.append(name+" : ");
+        for(int el : arr){
+            sb.append(el);
+            sb.append(" ");
+        }
+        sb.append(";");
+        System.out.println(sb.toString());
     }
 
     // TODO optimize by https://habrahabr.ru/post/114797/
@@ -55,14 +74,17 @@ public class MatrixUtil {
         try {
             for (int j = 0; ; j++) {
                 for (int k = 0; k < matrixSize; k++) {
-                    thatColumn[j] = matrixB[k][j];
+                    thatColumn[k] = matrixB[k][j];
                 }
+                //print("columnB",thatColumn,j);
                 for (int i = 0; i < matrixSize; i++) {
                     int[] thisRow = matrixA[i];
+                    //print("rowA",thisRow,j);
                     int sum = 0;
                     for (int k = 0; k < matrixSize; k++) {
                         sum += thisRow[k] * thatColumn[k];
                     }
+                    //System.out.println("matrixC["+i+"]["+j+"] = "+sum);
                     matrixC[i][j] = sum;
                 }
             }
