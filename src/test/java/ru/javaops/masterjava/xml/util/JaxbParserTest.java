@@ -1,6 +1,7 @@
 package ru.javaops.masterjava.xml.util;
 
 import com.google.common.io.Resources;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.javaops.masterjava.xml.schema.CityType;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
@@ -27,6 +28,7 @@ public class JaxbParserTest {
     }
 
     @Test
+    @Ignore
     public void testCity() throws Exception {
         JAXBElement<CityType> cityElement = JAXB_PARSER.unmarshal(
                 Resources.getResource("city.xml").openStream());
