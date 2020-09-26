@@ -4,15 +4,22 @@
     <Users>
         <User flag="active" city="kiv" email="gmail@gmail.com">
             <fullName>Full Name</fullName>
-            <group>g1</group>
+            <userGroups>
+                <group>g1</group>
+            </userGroups>
         </User>
         <User flag="superuser" city="spb" email="admin@javaops.ru">
             <fullName>Admin</fullName>
-            <group>g2</group>
+            <userGroups>
+                <group>g2</group>
+                <group>g1</group>
+            </userGroups>
         </User>
         <User flag="deleted" city="spb" email="mail@yandex.ru">
             <fullName>Deleted</fullName>
-            <group>g1</group>
+            <userGroups>
+                <group>g1</group>
+            </userGroups>
         </User>
     </Users>
     <Cities>

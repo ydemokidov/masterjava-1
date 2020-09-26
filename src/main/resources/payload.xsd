@@ -43,7 +43,13 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element type="xs:string" name="fullName"/>
-                <xs:element type="xs:IDREF" name="group"/>
+                <xs:element name="userGroups">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="group" type="xs:IDREF"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
             <xs:attribute type="xs:string" name="email"/>
             <xs:attribute type="flagType" name="flag" use="required"/>
