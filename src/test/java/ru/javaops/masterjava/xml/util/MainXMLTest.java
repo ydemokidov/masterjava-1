@@ -2,11 +2,17 @@ package ru.javaops.masterjava.xml.util;
 
 import com.google.common.io.Resources;
 import org.junit.Test;
+import ru.javaops.masterjava.xml.schema.ObjectFactory;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 
 public class MainXMLTest {
+    private static final JaxbParser JAXB_PARSER = new JaxbParser(ObjectFactory.class);
+
+    static {
+        JAXB_PARSER.setSchema(Schemas.ofClasspath("payload.xsd"));
+    }
     @Test
     public void mainXMLTest() throws Exception{
         try(StaxStreamProcessor staxStreamProcessor =
@@ -34,7 +40,11 @@ public class MainXMLTest {
                     }
                 }
             }
-
         }
+    }
+
+    @Test
+    public void printProjectParticipants(){
+        String project = "";
     }
 }
