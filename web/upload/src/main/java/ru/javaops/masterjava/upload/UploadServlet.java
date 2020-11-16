@@ -4,7 +4,7 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.thymeleaf.context.WebContext;
-import ru.javaops.masterjava.model.User;
+import ru.javaops.masterjava.persist.model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

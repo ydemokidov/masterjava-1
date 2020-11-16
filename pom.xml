@@ -19,5 +19,6 @@
         <module>services/mail-api</module>
         <module>test</module>
         <module>web</module>
+        <module>persist</module>
     </modules>
 </project>
