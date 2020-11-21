@@ -37,6 +37,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>ru.javaops</groupId>
+            <artifactId>persist</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
