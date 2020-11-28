@@ -11,8 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.Buffer;
 import java.util.List;
 
 import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
@@ -45,7 +48,18 @@ public class UploadServlet extends HttpServlet {
                         webContext.setVariable("users", users);
                         engine.process("result", webContext, resp.getWriter());
                     }
-                    break;
+                    //break;
+                }
+                //chunkSize
+                else
+                {
+                    if(fileItemStream.getFieldName().equals("chunkSize")) {
+                        try (InputStream is = fileItemStream.openStream();
+                             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                            System.out.println(reader.readLine());
+                        }
+                    }
+
                 }
             }
         } catch (Exception e) {
