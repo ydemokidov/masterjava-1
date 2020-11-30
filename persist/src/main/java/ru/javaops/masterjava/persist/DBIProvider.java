@@ -9,6 +9,8 @@ import ru.javaops.masterjava.persist.dao.AbstractDao;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import java.sql.DriverManager;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class DBIProvider {
@@ -48,5 +50,20 @@ public class DBIProvider {
 
     public static <T extends AbstractDao> T getDao(Class<T> daoClass) {
         return DBIHolder.jDBI.onDemand(daoClass);
+    }
+
+    public static void initDBI() {
+        initDBI("jdbc:postgresql://localhost:5432/masterjava", "postgres", "admin");
+    }
+
+    public static void initDBI(String dbUrl, String dbUser, String dbPassword) {
+        DBIProvider.init(() -> {
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("PostgreSQL driver not found", e);
+            }
+            return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        });
     }
 }

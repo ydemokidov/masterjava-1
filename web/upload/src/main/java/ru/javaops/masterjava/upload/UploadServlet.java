@@ -4,6 +4,7 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.thymeleaf.context.WebContext;
+import ru.javaops.masterjava.DBUtils.UploadDBUtils;
 import ru.javaops.masterjava.persist.model.User;
 
 import javax.servlet.ServletException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
@@ -24,6 +26,7 @@ import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
 public class UploadServlet extends HttpServlet {
 
     private final UserProcessor userProcessor = new UserProcessor();
+    private int  chunkSize =3;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,13 +43,12 @@ public class UploadServlet extends HttpServlet {
 //            https://commons.apache.org/proper/commons-fileupload/streaming.html
 
             final FileItemIterator itemIterator = upload.getItemIterator(req);
+            List<User> users = new ArrayList<>();
             while (itemIterator.hasNext()) { //expect that it's only one file
                 FileItemStream fileItemStream = itemIterator.next();
                 if (!fileItemStream.isFormField()) {
                     try (InputStream is = fileItemStream.openStream()) {
-                        List<User> users = userProcessor.process(is);
-                        webContext.setVariable("users", users);
-                        engine.process("result", webContext, resp.getWriter());
+                        users = userProcessor.process(is);
                     }
                     //break;
                 }
@@ -55,13 +57,16 @@ public class UploadServlet extends HttpServlet {
                 {
                     if(fileItemStream.getFieldName().equals("chunkSize")) {
                         try (InputStream is = fileItemStream.openStream();
-                             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                            System.out.println(reader.readLine());
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                             chunkSize = Integer.parseInt(reader.readLine());
                         }
                     }
-
                 }
             }
+            UploadDBUtils utils = new UploadDBUtils(chunkSize);
+            utils.usersBatchInsert(users);
+            webContext.setVariable("users", users);
+            engine.process("result", webContext, resp.getWriter());
         } catch (Exception e) {
             webContext.setVariable("exception", e);
             engine.process("exception", webContext, resp.getWriter());
