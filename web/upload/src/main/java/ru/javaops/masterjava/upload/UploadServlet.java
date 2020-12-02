@@ -5,6 +5,8 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.thymeleaf.context.WebContext;
 import ru.javaops.masterjava.DBUtils.UploadDBUtils;
+import ru.javaops.masterjava.persist.DBIProvider;
+import ru.javaops.masterjava.persist.dao.UserDao;
 import ru.javaops.masterjava.persist.model.User;
 
 import javax.servlet.ServletException;
@@ -63,8 +65,13 @@ public class UploadServlet extends HttpServlet {
                     }
                 }
             }
-            UploadDBUtils utils = new UploadDBUtils(chunkSize);
-            utils.usersBatchInsert(users);
+
+            UploadDBUtils.usersBatchInsert(users);
+
+            //селектим из базы 20 юзеров
+            UserDao dao = DBIProvider.getDao(UserDao.class);
+            users = dao.getWithLimit(20);
+
             webContext.setVariable("users", users);
             engine.process("result", webContext, resp.getWriter());
         } catch (Exception e) {

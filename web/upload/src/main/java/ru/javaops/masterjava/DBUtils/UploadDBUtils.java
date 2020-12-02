@@ -9,22 +9,9 @@ import ru.javaops.masterjava.persist.model.User;
 import java.util.List;
 
 public class UploadDBUtils {
-    private int chunkSize;
-    private final String userSqlTemplate = "INSERT INTO users (full_name, email, flag) VALUES ('%s','%s','%s')";
+    private static final String userSqlTemplate = "INSERT INTO users (full_name, email, flag) VALUES ('%s','%s','%s') ON CONFLICT(email) DO NOTHING";
 
-    public int getChunkSize() {
-        return chunkSize;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
-    }
-
-    public UploadDBUtils(int chunkSize) {
-        this.chunkSize = chunkSize;
-    }
-
-    public void usersBatchInsert(List<User> entities){
+    public static void usersBatchInsert(List<User> entities){
         DBIProvider.initDBI();
         DBI dbi = DBIProvider.getDBI();
         Handle h = dbi.open();
