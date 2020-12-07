@@ -1,7 +1,8 @@
 package ru.javaops.masterjava.upload;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
+import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.thymeleaf.context.WebContext;
 import ru.javaops.masterjava.persist.model.User;
@@ -11,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -19,38 +21,48 @@ import static ru.javaops.masterjava.common.web.ThymeleafListener.engine;
 
 @WebServlet("/")
 public class UploadServlet extends HttpServlet {
+    private static final Logger log = LoggerFactory.getLogger(UploadServlet.class);
+    private static final int CHUNK_SIZE = 2000;
 
     private final UserProcessor userProcessor = new UserProcessor();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale());
-        engine.process("upload", webContext, resp.getWriter());
+        out(req, resp, "", CHUNK_SIZE);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final ServletFileUpload upload = new ServletFileUpload();
-        final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale());
-
+        String message;
+        int chunkSize = CHUNK_SIZE;
         try {
-//            https://commons.apache.org/proper/commons-fileupload/streaming.html
-
-            final FileItemIterator itemIterator = upload.getItemIterator(req);
-            while (itemIterator.hasNext()) { //expect that it's only one file
-                FileItemStream fileItemStream = itemIterator.next();
-                if (!fileItemStream.isFormField()) {
-                    try (InputStream is = fileItemStream.openStream()) {
-                        List<User> users = userProcessor.process(is);
-                        webContext.setVariable("users", users);
-                        engine.process("result", webContext, resp.getWriter());
-                    }
-                    break;
+            chunkSize = Integer.parseInt(req.getParameter("chunkSize"));
+            if (chunkSize < 1) {
+                message = "Chunk Size must be > 1";
+            } else {
+                Part filePart = req.getPart("fileToUpload");
+                try (InputStream is = filePart.getInputStream()) {
+                    List<User> users = userProcessor.process(is, chunkSize);
+                    log.info("Successfully uploaded " + users.size() + " users");
+                    final WebContext webContext =
+                            new WebContext(req, resp, req.getServletContext(), req.getLocale(),
+                                    ImmutableMap.of("users", users));
+                    engine.process("result", webContext, resp.getWriter());
+                    return;
                 }
             }
         } catch (Exception e) {
-            webContext.setVariable("exception", e);
-            engine.process("exception", webContext, resp.getWriter());
+            log.info(e.getMessage(), e);
+            message = e.toString();
         }
+        out(req, resp, message, chunkSize);
+    }
+
+    private void out(HttpServletRequest req, HttpServletResponse resp, String message, int chunkSize) throws IOException {
+        resp.setCharacterEncoding("utf-8");
+        final WebContext webContext = new WebContext(req, resp, req.getServletContext(), req.getLocale(),
+                ImmutableMap.of("message", message, "chunkSize", chunkSize));
+        engine.process("upload", webContext, resp.getWriter());
     }
 }
