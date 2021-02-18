@@ -9,7 +9,6 @@ import ru.javaops.masterjava.persist.model.User;
 import ru.javaops.masterjava.persist.model.UserFlag;
 import ru.javaops.masterjava.xml.schema.ObjectFactory;
 import ru.javaops.masterjava.xml.util.JaxbParser;
-import ru.javaops.masterjava.xml.util.JaxbUnmarshaller;
 import ru.javaops.masterjava.xml.util.StaxStreamProcessor;
 
 import javax.xml.bind.JAXBException;
@@ -23,8 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+@Slf4j
 public class UserProcessor {
-    private static final Logger log = LoggerFactory.getLogger(UserProcessor.class);
     private static final int NUMBER_THREADS = 4;
 
     private static final JaxbParser jaxbParser = new JaxbParser(ObjectFactory.class);
