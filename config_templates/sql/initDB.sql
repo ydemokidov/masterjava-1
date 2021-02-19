@@ -40,9 +40,9 @@ CREATE TABLE groups(
 
 CREATE SEQUENCE user_group_seq START 100;
 CREATE TABLE user_groups(
-                            id INTEGER PRIMARY KEY DEFAULT nextval('user_group_seq'),
-                            user_id INTEGER,
-                            group_id INTEGER
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES groups(id),
+    constraint pk_user_group PRIMARY KEY (user_id,group_id)
 );
 
 CREATE TYPE user_flag AS ENUM ('active', 'deleted', 'superuser');
