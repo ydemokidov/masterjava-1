@@ -11,6 +11,6 @@ public class Project extends BaseEntity{
 
     public Project(Integer id, String name) {
         this(name);
-        this.id = id;
+        this.setId(id);
     }
 }

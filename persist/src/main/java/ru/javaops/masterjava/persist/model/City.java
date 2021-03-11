@@ -14,6 +14,6 @@ public class City extends BaseEntity{
 
     public City(Integer id, String shortName, String name) {
         this(shortName,name);
-        this.id = id;
+        this.setId(id);
     }
 }

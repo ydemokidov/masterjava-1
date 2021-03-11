@@ -15,6 +15,6 @@ public class Group extends BaseEntity{
 
     public Group(Integer id, String name, GroupType type, int projectId) {
         this(name,type,projectId);
-        this.id = id;
+        this.setId(id);
     }
 }
