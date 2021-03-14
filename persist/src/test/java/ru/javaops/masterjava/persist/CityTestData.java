@@ -2,8 +2,6 @@ package ru.javaops.masterjava.persist;
 
 import com.google.common.collect.ImmutableList;
 import ru.javaops.masterjava.persist.dao.CityDao;
-import ru.javaops.masterjava.persist.dao.UserDao;
-import ru.javaops.masterjava.persist.dao.UserGroupDao;
 import ru.javaops.masterjava.persist.model.City;
 
 import java.util.List;
