@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class UserGroup extends BaseEntity{
     @NotNull int UserId;

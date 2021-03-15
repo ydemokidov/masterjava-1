@@ -1,6 +1,7 @@
 package ru.javaops.masterjava.persist.dao;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.BindBean;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import ru.javaops.masterjava.persist.model.UserGroup;
@@ -20,4 +21,7 @@ public abstract class UserGroupDao implements AbstractDao{
 
     @SqlQuery("SELECT * FROM user_groups WHERE group_id = :groupId")
     public abstract List<UserGroup> getUsersByGroupId(@Bind int groupId);
+
+    @SqlUpdate("INSERT INTO user_groups (user_id,group_id) VALUES (:userId,:groupId)")
+    public abstract UserGroup insertGeneratedId(@BindBean UserGroup userGroup);
 }

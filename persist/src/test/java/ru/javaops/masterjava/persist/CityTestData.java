@@ -18,7 +18,7 @@ public class CityTestData {
         city1 = new City("msk","Moscow");
         city2 = new City("spb","Saint Petersburg");
         city3 = new City("vrn","Voronezh");
-        city4 = new City("vkz","Vladikavkaz");
+        city4 = new City("zrk","Zaraisk");
         cities3 = ImmutableList.of(city1,city2,city3);
     }
 
